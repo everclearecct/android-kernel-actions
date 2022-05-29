@@ -30,7 +30,7 @@ repo_name="${GITHUB_REPOSITORY/*\/}"
 zipper_path="${ZIPPER_PATH:-zipper}"
 kernel_path="${KERNEL_PATH:-.}"
 name="${NAME:-$repo_name}"
-python_version="${PYTHON_VERSION:-3}"
+python_version=2
 
 msg "Updating container..."
 apt update && apt upgrade -y
