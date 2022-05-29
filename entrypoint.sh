@@ -132,7 +132,50 @@ if [[ $arch = "arm64" ]]; then
         export CLANG_TRIPLE="aarch64-linux-gnu-"
         export CROSS_COMPILE="aarch64-linux-gnu-"
         export CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-    elif [[ $compiler = aosp-clang/* ]]; then
+    elif [[ $compiler = aosp-gcc ]]; then
+        url="https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.8/+archive/refs/heads/master.tar.gz"
+        echo "Downloading $url"
+        if ! wget --no-check-certificate "$url" -O /tmp/aosp-gcc-arm64.tar.gz &>/dev/null; then
+            err "Failed downloading toolchain, refer to the README for details"
+            exit 1
+        fi
+        url="https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.8/+archive/refs/heads/master.tar.gz"
+        echo "Downloading $url"
+        if ! wget --no-check-certificate "$url" -O /tmp/aosp-gcc-arm.tar.gz &>/dev/null; then
+            err "Failed downloading toolchain, refer to the README for details"
+            exit 1
+        fi
+        url="https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.17-4.8/+archive/refs/heads/master.tar.gz"
+        echo "Downloading $url"
+        if ! wget --no-check-certificate "$url" -O /tmp/aosp-gcc-host.tar.gz &>/dev/null; then
+            err "Failed downloading toolchain, refer to the README for details"
+            exit 1
+        fi
+
+        mkdir -p /aosp-gcc-arm64 /aosp-gcc-arm /aosp-gcc-host
+        extract_tarball /tmp/aosp-gcc-arm64.tar.gz /aosp-gcc-arm64
+        extract_tarball /tmp/aosp-gcc-arm.tar.gz /aosp-gcc-arm
+        extract_tarball /tmp/aosp-gcc-host.tar.gz /aosp-gcc-host
+
+        for i in /aosp-gcc-host/bin/x86_64-linux-*; do
+            ln -sf "$i" "${i/x86_64-linux-}"
+        done
+
+        if $binutils; then
+            make_opts="CC=gcc"
+            host_make_opts="gcc HOSTCXX=g++"
+        else
+            make_opts="CC=gcc LD=ld NM=nm STRIP=strip OBJCOPY=objcopy"
+            make_opts+=" OBJDUMP=objdump READELF=readelf"
+            host_make_opts="HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld HOSTAR=ar"
+        fi
+
+        apt install -y --no-install-recommends libgcc-10-dev || exit 127
+
+        export PATH="/aosp-gcc-arm64/bin:/aosp-gcc-arm/bin:/aosp-gcc-host/bin:$PATH"
+        export CROSS_COMPILE="aarch64-linux-android-"
+        export CROSS_COMPILE_ARM32="arm-linux-androideabi-"
+         elif [[ $compiler = aosp-clang/* ]]; then
         ver="${compiler/aosp-clang\/}"
         ver_number="${ver/\/binutils}"
         url="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/${ver_number}.tar.gz"
