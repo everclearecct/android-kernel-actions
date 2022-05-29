@@ -133,19 +133,19 @@ if [[ $arch = "arm64" ]]; then
         export CROSS_COMPILE="aarch64-linux-gnu-"
         export CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
     elif [[ $compiler = aosp-gcc ]]; then
-        url="https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.8/+archive/refs/heads/master.tar.gz"
+        url="https://github.com/Sepatu-Bot/aarch64-linux-android-4.8/archive/refs/heads/aarch64-linux-android-4.8.tar.gz"
         echo "Downloading $url"
         if ! wget --no-check-certificate "$url" -O /tmp/aosp-gcc-arm64.tar.gz &>/dev/null; then
             err "Failed downloading toolchain, refer to the README for details"
             exit 1
         fi
-        url="https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.8/+archive/refs/heads/master.tar.gz"
+        url="https://github.com/burstlam/arm-linux-androideabi-4.8/archive/refs/heads/master.zip.tar.gz"
         echo "Downloading $url"
         if ! wget --no-check-certificate "$url" -O /tmp/aosp-gcc-arm.tar.gz &>/dev/null; then
             err "Failed downloading toolchain, refer to the README for details"
             exit 1
         fi
-        url="https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.17-4.8/+archive/refs/heads/master.tar.gz"
+        url="https://github.com/premaca/x86_64-linux-glibc2.17-4.8/archive/refs/heads/10.0.tar.gz"
         echo "Downloading $url"
         if ! wget --no-check-certificate "$url" -O /tmp/aosp-gcc-host.tar.gz &>/dev/null; then
             err "Failed downloading toolchain, refer to the README for details"
